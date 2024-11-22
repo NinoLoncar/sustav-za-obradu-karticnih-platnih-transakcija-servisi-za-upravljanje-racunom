@@ -1,4 +1,4 @@
-package foi.air.szokpt.accountmng.security.hashing;
+package foi.air.szokpt.accountmng.util.hashing;
 
 public interface Hasher {
     String hashText(String text);

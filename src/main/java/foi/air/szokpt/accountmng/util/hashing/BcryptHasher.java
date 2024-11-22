@@ -1,4 +1,4 @@
-package foi.air.szokpt.accountmng.security.hashing;
+package foi.air.szokpt.accountmng.util.hashing;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
