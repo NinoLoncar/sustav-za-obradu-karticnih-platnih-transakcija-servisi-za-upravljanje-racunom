@@ -27,17 +27,14 @@ public class User {
 
     private String password;
 
-    private String salt;
-
     public User( String firstName, String lastName, UserRole role,
-                String email, String username, String password, String salt) {
+                String email, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
         this.email = email;
         this.username = username;
         this.password = password;
-        this.salt = salt;
     }
 
     public User() {
@@ -99,11 +96,4 @@ public class User {
         this.password = password;
     }
 
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
 }
