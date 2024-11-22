@@ -16,4 +16,8 @@ public class BcryptHasher implements Hasher{
     public String hashText(String text) {
         return bcryptPasswordEncoder.encode(text);
     }
+
+    public Boolean verifyHash(String plainText, String hash) {
+        return bcryptPasswordEncoder.matches(plainText, hash);
+    }
 }
