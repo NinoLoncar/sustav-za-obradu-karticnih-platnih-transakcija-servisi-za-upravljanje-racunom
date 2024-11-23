@@ -1,16 +1,33 @@
 package foi.air.szokpt.accountmng.services;
 
 import foi.air.szokpt.accountmng.entitites.User;
+import foi.air.szokpt.accountmng.exceptions.AuthenticationException;
+import foi.air.szokpt.accountmng.repositories.UserRepository;
+import foi.air.szokpt.accountmng.util.JwtUtil;
+import foi.air.szokpt.accountmng.util.hashing.Hasher;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AuthenticationService {
-    private final List<User> users = List.of(new User("admin", "admin"));
 
-    public boolean authenticate(String username, String password) {
-        return users.stream().anyMatch(user ->
-                user.getUsername().equals(username) && user.getPassword().equals(password));
+    private final UserRepository userRepository;
+    private final Hasher hasher;
+    private final JwtUtil jwtUtil;
+
+    public AuthenticationService(UserRepository userRepository, Hasher hasher, JwtUtil jwtUtil) {
+        this.userRepository = userRepository;
+        this.hasher = hasher;
+        this.jwtUtil = jwtUtil;
+    }
+
+    public String authenticate(String username, String password) {
+        User registeredUser = userRepository.findByUsername(username)
+                .orElseThrow(()->new AuthenticationException("User not found"));
+
+        if(!hasher.verifyHash(password,registeredUser.getPassword())){
+            throw new AuthenticationException("Invalid credentials");
+        }
+
+        return jwtUtil.generateToken(username,registeredUser.getRole().getName());
     }
 }
