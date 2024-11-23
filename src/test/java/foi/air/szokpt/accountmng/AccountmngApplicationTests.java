@@ -1,4 +1,4 @@
-package foi.air.szokpt.accountmng.accountmng;
+package foi.air.szokpt.accountmng;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,4 +1,4 @@
-package foi.air.szokpt.accountmng.accountmng;
+package foi.air.szokpt.accountmng;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
