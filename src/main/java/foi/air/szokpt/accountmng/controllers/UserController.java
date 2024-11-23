@@ -22,13 +22,13 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody User user) {
         try {
-            this.userService.registerUser(user);
-            ApiResponse response = new ApiResponse("Successful registration");
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            userService.registerUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ApiResponse("User successfully registered."));
         }
-        catch (Exception e) {
-            ApiResponse response = new ApiResponse(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse(e.getMessage()));
         }
     }
 }

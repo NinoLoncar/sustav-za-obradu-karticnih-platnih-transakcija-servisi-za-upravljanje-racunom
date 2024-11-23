@@ -2,8 +2,6 @@ package foi.air.szokpt.accountmng.entitites;
 
 import jakarta.persistence.*;
 
-
-
 @Entity
 @Table(name = "users")
 public class User {
