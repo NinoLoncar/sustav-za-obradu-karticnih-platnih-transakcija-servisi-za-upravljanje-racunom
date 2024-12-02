@@ -40,6 +40,20 @@ public class JwtUtil {
             return false;
         }
     }
+
+    public String getRoleName(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("role", String.class);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new RuntimeException("Invalid token", e);
+        }
+    }
+
     private Key getKey() {
         return new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS512.getJcaName());
     }
