@@ -1,5 +1,6 @@
 package foi.air.szokpt.accountmng.util;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,38 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + durationTime))
                 .signWith(getKey())
                 .compact();
+    }
+
+    public String extractToken(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new io.jsonwebtoken.JwtException("Authorization header is missing or malformed");
+        }
+        return authorizationHeader.substring(7);
+    }
+
+    public boolean verifyToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public String getRoleName(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("role", String.class);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new foi.air.szokpt.accountmng.exceptions.JwtException("Invalid token");
+        }
     }
 
     private Key getKey() {
