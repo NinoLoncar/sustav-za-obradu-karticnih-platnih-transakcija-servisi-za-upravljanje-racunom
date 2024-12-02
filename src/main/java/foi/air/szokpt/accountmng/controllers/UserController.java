@@ -30,8 +30,14 @@ public class UserController {
         try {
             String token = authorizationHeader.substring(7);
             Boolean isTokenValid = jwtService.verifyToken(token);
-            if (!isTokenValid) return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse("Token is not valid"));
+            if (!isTokenValid) return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse("Invalid token"));
+
+            Boolean isRoleAdmin = jwtService.checkAdminRole(token);
+            if (!isRoleAdmin) return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse("Invalid role"));
+
+
             userService.registerUser(user);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse("User successfully registered"));
