@@ -1,5 +1,6 @@
 package foi.air.szokpt.accountmng.util;
 
+import foi.air.szokpt.accountmng.exceptions.AuthorizationException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -50,7 +51,7 @@ public class JwtUtil {
                     .getBody()
                     .get("role", String.class);
         } catch (JwtException | IllegalArgumentException e) {
-            throw new RuntimeException("Invalid token", e);
+            throw new AuthorizationException("Invalid token");
         }
     }
 

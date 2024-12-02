@@ -2,6 +2,7 @@ package foi.air.szokpt.accountmng.controllers;
 
 import foi.air.szokpt.accountmng.dtos.respones.ApiResponse;
 import foi.air.szokpt.accountmng.entitites.User;
+import foi.air.szokpt.accountmng.exceptions.AuthorizationException;
 import foi.air.szokpt.accountmng.services.JwtService;
 import foi.air.szokpt.accountmng.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse("User successfully registered"));
         }
-        catch (RuntimeException e) {
+        catch (AuthorizationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse(e.getMessage()));
         }
