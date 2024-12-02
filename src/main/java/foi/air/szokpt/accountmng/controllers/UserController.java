@@ -2,6 +2,7 @@ package foi.air.szokpt.accountmng.controllers;
 
 import foi.air.szokpt.accountmng.dtos.respones.ApiResponse;
 import foi.air.szokpt.accountmng.entitites.User;
+import foi.air.szokpt.accountmng.exceptions.JwtException;
 import foi.air.szokpt.accountmng.exceptions.ValidationException;
 import foi.air.szokpt.accountmng.services.JwtService;
 import foi.air.szokpt.accountmng.services.UserService;
@@ -33,10 +34,14 @@ public class UserController {
             Boolean isTokenValid = jwtService.verifyToken(token);
             if (!isTokenValid) return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponse("Invalid token"));
-
-            Boolean isRoleAdmin = jwtService.checkAdminRole(token);
-            if (!isRoleAdmin) return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse("Invalid role"));
+            try {
+                Boolean isRoleAdmin = jwtService.checkAdminRole(token);
+                if (!isRoleAdmin) return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ApiResponse("This role is not authorized for this action"));
+            } catch(JwtException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ApiResponse(e.getMessage()));
+            }
         try {
             userService.registerUser(user);
             return ResponseEntity.status(HttpStatus.CREATED)
