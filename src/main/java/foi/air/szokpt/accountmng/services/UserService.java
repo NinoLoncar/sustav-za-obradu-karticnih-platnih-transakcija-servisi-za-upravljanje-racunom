@@ -2,26 +2,27 @@ package foi.air.szokpt.accountmng.services;
 
 import foi.air.szokpt.accountmng.entitites.User;
 import foi.air.szokpt.accountmng.repositories.UserRepository;
-import foi.air.szokpt.accountmng.util.validation.UserDataValidator;
+import foi.air.szokpt.accountmng.util.validation.Validator;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    UserDataValidator userDataValidator;
+    Validator<User> userDataValidator;
 
-    public UserService(UserRepository userRepository, UserDataValidator userDataValidator) {
+    public UserService(UserRepository userRepository, Validator<User> validator) {
         this.userRepository = userRepository;
-        this.userDataValidator = userDataValidator;
+        this.userDataValidator = validator;
     }
 
-
     public void registerUser(User user) {
-        userDataValidator.validateRequiredFields(user);
-        userDataValidator.validateEmailFormat(user.getEmail());
-        userDataValidator.validateEmailUniqueness(user.getEmail());
-        userDataValidator.validateUsernameUniqueness(user.getUsername());
-
+        userDataValidator.validateData(user);
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("User with this email already exists");
+        }
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("User with this username already exists");
+        }
         userRepository.save(user);
     }
 
