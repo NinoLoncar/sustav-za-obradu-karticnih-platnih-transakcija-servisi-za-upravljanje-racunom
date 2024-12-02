@@ -2,7 +2,7 @@ package foi.air.szokpt.accountmng.controllers;
 
 import foi.air.szokpt.accountmng.dtos.respones.ApiResponse;
 import foi.air.szokpt.accountmng.entitites.User;
-import foi.air.szokpt.accountmng.exceptions.AuthorizationException;
+import foi.air.szokpt.accountmng.exceptions.ValidationException;
 import foi.air.szokpt.accountmng.services.JwtService;
 import foi.air.szokpt.accountmng.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class UserController {
     public ResponseEntity<ApiResponse> register(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody User user) {
-        try {
+
             String token = authorizationHeader.substring(7);
             Boolean isTokenValid = jwtService.verifyToken(token);
             if (!isTokenValid) return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -37,13 +37,11 @@ public class UserController {
             Boolean isRoleAdmin = jwtService.checkAdminRole(token);
             if (!isRoleAdmin) return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponse("Invalid role"));
-
-
+        try {
             userService.registerUser(user);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse("User successfully registered"));
-        }
-        catch (AuthorizationException e) {
+        } catch (ValidationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse(e.getMessage()));
         }
