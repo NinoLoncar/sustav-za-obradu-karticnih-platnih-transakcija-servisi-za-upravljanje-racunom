@@ -1,6 +1,7 @@
 package foi.air.szokpt.accountmng.util.validation;
 
 import foi.air.szokpt.accountmng.entitites.User;
+import foi.air.szokpt.accountmng.exceptions.ValidationException;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
@@ -14,29 +15,25 @@ public class UserDataValidator implements Validator<User> {
     }
 
     private void validateRequiredFields(User user) {
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            throw new RuntimeException("Email cannot be null or empty");
-        }
-        if (user.getUsername() == null || user.getUsername().isEmpty()) {
-            throw new RuntimeException("Username cannot be null or empty");
-        }
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            throw new RuntimeException("Password cannot be null or empty");
-        }
-        if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
-            throw new RuntimeException("First name cannot be null or empty");
-        }
-        if (user.getLastName() == null || user.getLastName().isEmpty()) {
-            throw new RuntimeException("Last name cannot be null or empty");
-        }
+        validateField(user.getEmail(), "Email cannot be null or empty");
+        validateField(user.getUsername(), "Username cannot be null or empty");
+        validateField(user.getPassword(), "Password cannot be null or empty");
+        validateField(user.getFirstName(), "First name cannot be null or empty");
+        validateField(user.getLastName(), "Last name cannot be null or empty");
         if (user.getRole() == null) {
-            throw new RuntimeException("Role cannot be null");
+            throw new ValidationException("Role cannot be null");
+        }
+    }
+
+    private void validateField(String field, String errorMessage) {
+        if (field == null || field.isEmpty()) {
+            throw new ValidationException(errorMessage);
         }
     }
 
     private void validateEmailFormat(String email) {
         if (!isValidEmail(email)) {
-            throw new RuntimeException("Invalid email format");
+            throw new ValidationException("Invalid email format");
         }
     }
 
