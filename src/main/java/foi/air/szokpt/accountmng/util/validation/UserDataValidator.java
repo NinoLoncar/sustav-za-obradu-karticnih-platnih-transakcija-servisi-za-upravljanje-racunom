@@ -51,6 +51,7 @@
         }
 
         private void checkEmailAvailability(String email) {
+            email = email.toLowerCase();
             if (userRepository.existsByEmail(email)) {
                 throw new ValidationException("User with this email already exists");
             }
