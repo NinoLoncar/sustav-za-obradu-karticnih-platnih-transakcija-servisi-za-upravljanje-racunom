@@ -29,6 +29,13 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String extractToken(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new io.jsonwebtoken.JwtException("Authorization header is missing or malformed");
+        }
+        return authorizationHeader.substring(7);
+    }
+
     public boolean verifyToken(String token) {
         try {
             Jwts.parserBuilder()
