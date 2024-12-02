@@ -1,5 +1,6 @@
 package foi.air.szokpt.accountmng.util;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,17 @@ public class JwtUtil {
                 .compact();
     }
 
+    public boolean verifyToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
     private Key getKey() {
         return new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS512.getJcaName());
     }
