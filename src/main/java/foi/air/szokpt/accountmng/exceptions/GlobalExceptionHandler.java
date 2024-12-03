@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleAuthorizationException(AuthorizationException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("message", ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(JwtException.class)
@@ -32,10 +32,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGenericException(Exception ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Object> handleNotFoundException(NotFoundException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("message", "An unexpected error occurred");
-        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+        body.put("message", "Resource not found");
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
+    
 }
