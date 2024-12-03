@@ -3,12 +3,14 @@ package foi.air.szokpt.accountmng.services;
 import foi.air.szokpt.accountmng.entitites.User;
 import foi.air.szokpt.accountmng.entitites.UserRole;
 import foi.air.szokpt.accountmng.exceptions.AuthorizationException;
+import foi.air.szokpt.accountmng.exceptions.NotFoundException;
 import foi.air.szokpt.accountmng.exceptions.ValidationException;
 import foi.air.szokpt.accountmng.repositories.RoleRepository;
 import foi.air.szokpt.accountmng.repositories.UserRepository;
 import foi.air.szokpt.accountmng.util.JwtUtil;
 import foi.air.szokpt.accountmng.util.hashing.Hasher;
 import foi.air.szokpt.accountmng.util.validation.Validator;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,25 +19,53 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final Validator<User> userDataValidator;
+    private final Validator<User> updateUserValidator;
+    private final Validator<User> registerUserValidator;
     private final Hasher hasher;
     private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, Validator<User> validator, Hasher hasher, JwtUtil jwtUtil) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository,
+                       @Qualifier("registerUserValidator") Validator<User> registerUserValidator,
+                       @Qualifier("updateUserValidator") Validator<User> updateUserValidator,
+                       Hasher hasher, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.userDataValidator = validator;
+        this.updateUserValidator = updateUserValidator;
+        this.registerUserValidator = registerUserValidator;
         this.hasher = hasher;
         this.jwtUtil = jwtUtil;
     }
 
     public void registerUser(String authorizationHeader, User user) {
         authorizeAdmin(authorizationHeader);
-        userDataValidator.validateData(user);
-        assignRoleToUser(user);
+        registerUserValidator.validateData(user);
+        assignRoleToUser(user, user.getRole().getName());
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(hasher.hashText(user.getPassword()));
         userRepository.save(user);
+    }
+
+    public void updateUser(int id, User newUserData, String authorizationHeader) {
+        authorizeAdmin(authorizationHeader);
+        Optional<User> optionalExistingUser = userRepository.findById(id);
+        if (optionalExistingUser.isPresent()) {
+            newUserData.setId(id);
+            updateUserValidator.validateData(newUserData);
+            User existingUser = optionalExistingUser.get();
+            saveUserUpdate(existingUser, newUserData);
+        } else {
+            throw new NotFoundException();
+        }
+    }
+
+    private void saveUserUpdate(User existingUser, User newUserData) {
+        existingUser.setEmail(newUserData.getEmail());
+        existingUser.setFirstName(newUserData.getFirstName());
+        existingUser.setLastName(newUserData.getLastName());
+        existingUser.setUsername(newUserData.getUsername());
+        assignRoleToUser(existingUser, newUserData.getRole().getName());
+        existingUser.setPassword(hasher.hashText(newUserData.getPassword()));
+        userRepository.save(existingUser);
     }
 
     private void authorizeAdmin(String authorizationHeader) {
@@ -51,12 +81,12 @@ public class UserService {
     private void checkAdminRole(String token) {
         String userRole = jwtUtil.getRoleName((token));
         if (!userRole.equals("admin")) {
-            throw new AuthorizationException("This role is not authorized for this action");
+            throw new AuthorizationException("User role is not authorized for this action");
         }
     }
 
-    private void assignRoleToUser(User user) {
-        Optional<UserRole> userRole = roleRepository.findByName(user.getRole().getName());
+    private void assignRoleToUser(User user, String roleName) {
+        Optional<UserRole> userRole = roleRepository.findByName(roleName);
         UserRole role = userRole.orElseThrow(() ->
                 new ValidationException("Role with name '" + user.getRole().getName() + "' does not exist"));
         user.setRole(role);
