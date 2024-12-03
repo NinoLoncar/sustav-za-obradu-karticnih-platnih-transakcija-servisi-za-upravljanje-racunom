@@ -1,6 +1,5 @@
 package foi.air.szokpt.accountmng.exceptions;
 
-import foi.air.szokpt.accountmng.dtos.respones.ApiResponse;
 import foi.air.szokpt.accountmng.util.ApiResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +16,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthorizationException(AuthorizationException ex) {
+    public ResponseEntity<Object> handleAuthorizationException(AuthorizationException ex) {
         return new ResponseEntity<>(ApiResponseUtil.failure(ex.getMessage()),
                 HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(JwtException.class)
-    public ResponseEntity<ApiResponse<Void>> handleJwtException(JwtException ex) {
+    public ResponseEntity<Object> handleJwtException(JwtException ex) {
         return new ResponseEntity<>(ApiResponseUtil.failure("Invalid or expired token"),
                 HttpStatus.UNAUTHORIZED);
     }
@@ -31,6 +30,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(NotFoundException ex) {
         return new ResponseEntity<>(ApiResponseUtil.failure("Resource not found"),
+                HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex) {
+        return new ResponseEntity<>(ApiResponseUtil.failure("Invalid credentials"),
                 HttpStatus.NOT_FOUND);
     }
 }
