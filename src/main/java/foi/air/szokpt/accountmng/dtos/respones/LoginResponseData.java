@@ -1,10 +1,9 @@
 package foi.air.szokpt.accountmng.dtos.respones;
 
-public class LoginResponse extends ApiResponse {
+public class LoginResponseData{
     private String token;
 
-    public LoginResponse(String message, String token) {
-        super(message);
+    public LoginResponseData( String token) {
         this.token=token;
     }
 
