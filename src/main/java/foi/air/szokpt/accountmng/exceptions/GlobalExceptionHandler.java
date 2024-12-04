@@ -36,6 +36,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex) {
         return new ResponseEntity<>(ApiResponseUtil.failure("Invalid credentials"),
-                HttpStatus.NOT_FOUND);
+                HttpStatus.UNAUTHORIZED);
     }
 }
