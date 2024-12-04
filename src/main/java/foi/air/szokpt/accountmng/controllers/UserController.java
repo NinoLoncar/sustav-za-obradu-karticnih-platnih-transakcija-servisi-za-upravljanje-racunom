@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class UserController {
     private final UserService userService;
@@ -19,6 +21,15 @@ public class UserController {
     public UserController(UserService userService, Authorizer authorizer) {
         this.userService = userService;
         this.authorizer = authorizer;
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<ApiResponse<List<User>>> getUsers(
+            @RequestHeader("Authorization") String authorizationHeader) {
+        authorizer.authorizeAdmin(authorizationHeader);
+        List<User> users = userService.getUsers();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponseUtil.successWithData("User successfully registered", users));
     }
 
     @PostMapping("/register")

@@ -9,8 +9,10 @@ import foi.air.szokpt.accountmng.repositories.UserRepository;
 import foi.air.szokpt.accountmng.util.hashing.Hasher;
 import foi.air.szokpt.accountmng.util.validation.Validator;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +32,10 @@ public class UserService {
         this.updateUserValidator = updateUserValidator;
         this.registerUserValidator = registerUserValidator;
         this.hasher = hasher;
+    }
+
+    public List<User> getUsers() {
+        return userRepository.findAll(Sort.by("id"));
     }
 
     public void registerUser(User user) {
@@ -68,4 +74,6 @@ public class UserService {
                 new ValidationException("Role with name '" + user.getRole().getName() + "' does not exist"));
         user.setRole(role);
     }
+
+
 }
