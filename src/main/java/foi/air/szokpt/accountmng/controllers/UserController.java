@@ -42,6 +42,16 @@ public class UserController {
                 .body(ApiResponseUtil.success("User successfully registered"));
     }
 
+    @GetMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<User>> getUser(
+            @PathVariable int id,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        authorizer.authorizeAdmin(authorizationHeader);
+        User user = userService.getUser(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponseUtil.successWithData("User successfully registered", user));
+    }
+
     @PutMapping("/users/{id}")
     public ResponseEntity<ApiResponse<Void>> updateUser(
             @PathVariable int id,
