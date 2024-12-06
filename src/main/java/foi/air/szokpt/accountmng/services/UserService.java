@@ -48,12 +48,7 @@ public class UserService {
 
 
     public User getUser(int id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            throw new NotFoundException();
-        }
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException());
     }
 
     public void updateUser(int id, User newUserData) {
