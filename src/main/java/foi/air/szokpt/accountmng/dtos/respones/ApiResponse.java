@@ -2,18 +2,27 @@ package foi.air.szokpt.accountmng.dtos.respones;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.List;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
     private boolean success;
     private String message;
-    private T data;
+    private List<T> data;
 
     public ApiResponse(boolean success, String message) {
         this.success = success;
         this.message = message;
+        this.data = null;
     }
 
-    public ApiResponse(boolean success, String message, T data) {
+    public ApiResponse(boolean success, String message, T singleData) {
+        this.success = success;
+        this.message = message;
+        this.data = List.of(singleData);
+    }
+
+    public ApiResponse(boolean success, String message, List<T> data) {
         this.success = success;
         this.message = message;
         this.data = data;
@@ -35,11 +44,11 @@ public class ApiResponse<T> {
         this.success = success;
     }
 
-    public T getData() {
+    public List<T> getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(List<T> data) {
         this.data = data;
     }
 }

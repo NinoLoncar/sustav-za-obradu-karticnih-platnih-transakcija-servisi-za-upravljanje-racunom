@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<ApiResponse<List<User>>> getUsers(
+    public ResponseEntity<ApiResponse<User>> getUsers(
             @RequestHeader("Authorization") String authorizationHeader) {
         authorizer.authorizeAdmin(authorizationHeader);
         List<User> users = userService.getUsers();
