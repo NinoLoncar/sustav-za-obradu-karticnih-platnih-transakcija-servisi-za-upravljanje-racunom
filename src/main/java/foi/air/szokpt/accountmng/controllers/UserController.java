@@ -29,7 +29,7 @@ public class UserController {
         authorizer.authorizeAdmin(authorizationHeader);
         List<User> users = userService.getUsers();
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponseUtil.successWithData("User successfully registered", users));
+                .body(ApiResponseUtil.successWithData("Users successfully fetched", users));
     }
 
     @PostMapping("/register")
@@ -49,7 +49,7 @@ public class UserController {
         authorizer.authorizeAdmin(authorizationHeader);
         User user = userService.getUser(id);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponseUtil.successWithData("User successfully registered", user));
+                .body(ApiResponseUtil.successWithData("User successfully fetched", user));
     }
 
     @PutMapping("/users/{id}")
