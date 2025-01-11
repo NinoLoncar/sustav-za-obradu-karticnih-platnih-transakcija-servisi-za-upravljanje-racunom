@@ -27,8 +27,11 @@ public class User {
 
     private boolean blocked;
 
+    private boolean deactivated;
+
     public User(String firstName, String lastName, UserRole role,
-                String email, String username, String password, boolean blocked) {
+                String email, String username, String password, boolean blocked,
+                boolean deactivated) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
@@ -36,6 +39,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.blocked = blocked;
+        this.deactivated = deactivated;
     }
 
     public User() {
@@ -105,4 +109,11 @@ public class User {
         this.blocked = blocked;
     }
 
+    public boolean isDeactivated() {
+        return deactivated;
+    }
+
+    public void setDeactivated(boolean deactivated) {
+        this.deactivated = deactivated;
+    }
 }

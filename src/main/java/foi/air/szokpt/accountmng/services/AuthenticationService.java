@@ -32,6 +32,10 @@ public class AuthenticationService {
             throw new AuthenticationException("User is blocked");
         }
 
+        if (registeredUser.isDeactivated()) {
+            throw new AuthenticationException("User account is deactivated");
+        }
+
         return jwtUtil.generateToken(username, registeredUser.getRole().getName());
     }
 }

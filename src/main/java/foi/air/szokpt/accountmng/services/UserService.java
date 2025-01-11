@@ -80,6 +80,7 @@ public class UserService {
         assignRoleToUser(existingUser, newUserData.getRole().getName());
         existingUser.setPassword(newUserData.getPassword());
         existingUser.setBlocked(newUserData.isBlocked());
+        existingUser.setDeactivated(newUserData.isDeactivated());
         userRepository.save(existingUser);
     }
 
