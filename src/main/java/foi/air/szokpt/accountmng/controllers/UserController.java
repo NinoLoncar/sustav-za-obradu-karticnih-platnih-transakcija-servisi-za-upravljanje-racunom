@@ -1,7 +1,9 @@
 package foi.air.szokpt.accountmng.controllers;
 
 import foi.air.szokpt.accountmng.dtos.respones.ApiResponse;
+import foi.air.szokpt.accountmng.dtos.respones.TokenValidationResponse;
 import foi.air.szokpt.accountmng.entitites.User;
+import foi.air.szokpt.accountmng.services.TokenValidationService;
 import foi.air.szokpt.accountmng.services.UserService;
 import foi.air.szokpt.accountmng.util.ApiResponseUtil;
 import foi.air.szokpt.accountmng.util.Authorizer;
@@ -16,11 +18,13 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final Authorizer authorizer;
+    private final TokenValidationService tokenValidationService;
 
     @Autowired
-    public UserController(UserService userService, Authorizer authorizer) {
+    public UserController(UserService userService, Authorizer authorizer, TokenValidationService tokenValidationService) {
         this.userService = userService;
         this.authorizer = authorizer;
+        this.tokenValidationService = tokenValidationService;
     }
 
     @GetMapping("/users")
@@ -61,5 +65,15 @@ public class UserController {
         userService.updateUser(id, newUserData);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponseUtil.success("User successfully updated"));
+    }
+
+    @GetMapping("/validate-token")
+    public ResponseEntity<ApiResponse<TokenValidationResponse>> validateToken(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        TokenValidationResponse validationResponse = tokenValidationService.validateToken(authorizationHeader);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponseUtil.successWithData("Token is valid", validationResponse));
     }
 }
