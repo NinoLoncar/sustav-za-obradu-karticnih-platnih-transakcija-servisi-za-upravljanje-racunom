@@ -3,14 +3,13 @@ package foi.air.szokpt.accountmng.controllers;
 import foi.air.szokpt.accountmng.dtos.requests.LoginRequest;
 import foi.air.szokpt.accountmng.dtos.respones.ApiResponse;
 import foi.air.szokpt.accountmng.dtos.respones.LoginResponseData;
+import foi.air.szokpt.accountmng.dtos.respones.TokenValidationResponse;
 import foi.air.szokpt.accountmng.services.AuthenticationService;
 import foi.air.szokpt.accountmng.util.ApiResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AuthenticationController {
@@ -28,5 +27,15 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponseUtil.successWithData("Successful login",
                         new LoginResponseData(token)));
+    }
+
+    @GetMapping("/validate-token")
+    public ResponseEntity<ApiResponse<TokenValidationResponse>> validateToken(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        TokenValidationResponse validationResponse = authenticationService.validateToken(authorizationHeader);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponseUtil.successWithData("Token is valid", validationResponse));
     }
 }
