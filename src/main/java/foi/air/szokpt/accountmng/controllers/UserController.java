@@ -62,4 +62,5 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponseUtil.success("User successfully updated"));
     }
+
 }

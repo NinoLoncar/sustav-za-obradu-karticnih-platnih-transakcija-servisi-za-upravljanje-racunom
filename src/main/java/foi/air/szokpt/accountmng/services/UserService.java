@@ -54,12 +54,21 @@ public class UserService {
     public void updateUser(int id, User newUserData) {
         Optional<User> optionalExistingUser = userRepository.findById(id);
         if (optionalExistingUser.isPresent()) {
-            newUserData.setId(id);
-            updateUserValidator.validateData(newUserData);
             User existingUser = optionalExistingUser.get();
+            newUserData.setId(id);
+            setUserPassword(existingUser, newUserData);
+            updateUserValidator.validateData(newUserData);
             saveUserUpdate(existingUser, newUserData);
         } else {
             throw new NotFoundException();
+        }
+    }
+
+    private void setUserPassword(User existingUser, User newUserData) {
+        if (newUserData.getPassword().isEmpty()) {
+            newUserData.setPassword(existingUser.getPassword());
+        } else {
+            newUserData.setPassword(hasher.hashText(newUserData.getPassword()));
         }
     }
 
@@ -69,7 +78,9 @@ public class UserService {
         existingUser.setLastName(newUserData.getLastName());
         existingUser.setUsername(newUserData.getUsername());
         assignRoleToUser(existingUser, newUserData.getRole().getName());
-        existingUser.setPassword(hasher.hashText(newUserData.getPassword()));
+        existingUser.setPassword(newUserData.getPassword());
+        existingUser.setBlocked(newUserData.isBlocked());
+        existingUser.setDeactivated(newUserData.isDeactivated());
         userRepository.save(existingUser);
     }
 

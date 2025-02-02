@@ -1,7 +1,9 @@
 package foi.air.szokpt.accountmng.services;
 
+import foi.air.szokpt.accountmng.dtos.respones.TokenValidationResponse;
 import foi.air.szokpt.accountmng.entitites.User;
 import foi.air.szokpt.accountmng.exceptions.AuthenticationException;
+import foi.air.szokpt.accountmng.exceptions.JwtException;
 import foi.air.szokpt.accountmng.repositories.UserRepository;
 import foi.air.szokpt.accountmng.util.JwtUtil;
 import foi.air.szokpt.accountmng.util.hashing.Hasher;
@@ -22,12 +24,31 @@ public class AuthenticationService {
 
     public String authenticate(String username, String password) {
         User registeredUser = userRepository.findByUsername(username)
-                .orElseThrow(()->new AuthenticationException("User not found"));
+                .orElseThrow(() -> new AuthenticationException("User not found"));
 
-        if(!hasher.verifyHash(password,registeredUser.getPassword())){
+        if (!hasher.verifyHash(password, registeredUser.getPassword())) {
             throw new AuthenticationException("Invalid credentials");
         }
 
-        return jwtUtil.generateToken(username,registeredUser.getRole().getName());
+        if (registeredUser.isBlocked()) {
+            throw new AuthenticationException("User is blocked");
+        }
+
+        if (registeredUser.isDeactivated()) {
+            throw new AuthenticationException("User account is deactivated");
+        }
+
+        return jwtUtil.generateToken(username, registeredUser.getRole().getName());
+    }
+
+    public TokenValidationResponse validateToken(String authorizationHeader) {
+        String token = jwtUtil.extractToken(authorizationHeader);
+        boolean isValid = jwtUtil.verifyToken(token);
+
+        if (!isValid)
+            throw new JwtException("Invalid token");
+
+        String role = jwtUtil.getRoleName(token);
+        return new TokenValidationResponse(role);
     }
 }
